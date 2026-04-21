@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PRD Critic — a portfolio project by Ak</title>
+<meta name="description" content="An AI-powered PRD reviewer that scores drafts against a senior-PM rubric and surfaces the 2–3 priority fixes." />
+<style>
+  :root {
+    --bg: #fafaf7;
+    --ink: #1a1a1a;
+    --ink-dim: #555;
+    --accent: #c84b31;
+    --accent-soft: #fdeee8;
+    --line: #e4e0d8;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; line-height: 1.55; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 64px 24px 80px; }
+  header { margin-bottom: 48px; }
+  .eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 12px; }
+  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 16px; }
+  .lede { font-size: 18px; color: var(--ink-dim); margin: 0; }
+  h2 { font-size: 20px; letter-spacing: -0.01em; margin: 40px 0 12px; }
+  p { font-size: 16px; margin: 0 0 14px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0 8px; }
+  .btn { display: inline-block; text-decoration: none; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(0.95); }
+  .btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn.ghost:hover { background: var(--accent-soft); }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 16px; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } h1 { font-size: 30px; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
+  .card:hover { border-color: var(--accent); }
+  .card h3 { margin: 0 0 6px; font-size: 15px; color: var(--accent); }
+  .card p { margin: 0; font-size: 14px; color: var(--ink-dim); }
+  .meta { color: var(--ink-dim); font-size: 13px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
+  ul.plain { list-style: none; padding: 0; margin: 0; }
+  ul.plain li { padding: 6px 0; font-size: 15px; color: var(--ink-dim); }
+  ul.plain li strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Portfolio project · 2026</div>
+    <h1>PRD Critic</h1>
+    <p class="lede">An AI-powered PRD reviewer that scores drafts against a 9-criterion senior-PM rubric and surfaces the two or three priority fixes worth making before the review meeting.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="08-prototype.html">Try the prototype →</a>
+      <a class="btn ghost" href="09-case-study-template.md">Read the case study</a>
+    </div>
+  </header>
+
+  <h2>The question I was exploring</h2>
+  <p>Generic LLMs give agreeable, vague PRD feedback. A senior PM doesn't — they quote the draft, prioritize the two biggest issues, and tell you what to fix by the review meeting. I wanted to see how far a well-designed rubric and system prompt could close that gap.</p>
+
+  <h2>How I approached it</h2>
+  <ul class="plain">
+    <li><strong>Wrote the rubric first.</strong> Nine weighted criteria, each with 1–5 anchors. The rubric is the product; the prompt is the delivery.</li>
+    <li><strong>Built a system prompt that forces quoting.</strong> Every score must cite the PRD directly — no free-floating opinions, no hallucinated research.</li>
+    <li><strong>Tested on 10 PRDs</strong> (three deliberately designed: weak, medium, strong) and recorded where the critic over-called or under-called.</li>
+    <li><strong>Documented failure modes</strong> so I could talk about the tool's limits honestly, not just its wins.</li>
+  </ul>
+
+  <h2>Artifacts</h2>
+  <div class="cards">
+    <a class="card" href="08-prototype.html">
+      <h3>Interactive prototype →</h3>
+      <p>Paste a PRD, get a critique. Pre-loaded with three sample PRDs for a 60-second demo.</p>
+    </a>
+    <a class="card" href="02-prd-rubric.md">
+      <h3>The rubric →</h3>
+      <p>Nine criteria. This is where the PM thinking lives — and what I'd defend in an interview.</p>
+    </a>
+    <a class="card" href="03-system-prompt.md">
+      <h3>System prompt →</h3>
+      <p>The instructions given to Claude. Includes the "no fabrication" and "no hedging sandwiches" rules.</p>
+    </a>
+    <a class="card" href="07-eval-template.xlsx">
+      <h3>Eval workbook →</h3>
+      <p>Ten scored PRDs. Calibration gap between human and critic scored per criterion.</p>
+    </a>
+    <a class="card" href="09-case-study-template.md">
+      <h3>Case study →</h3>
+      <p>Decisions, tradeoffs, what I'd ship next.</p>
+    </a>
+    <a class="card" href="01-project-brief.md">
+      <h3>Project brief →</h3>
+      <p>The one-pager: problem, user, success criteria.</p>
+    </a>
+  </div>
+
+  <h2>What to ask me about</h2>
+  <p>Why a critic and not a generator. Why nine criteria, not twenty. The failure modes I couldn't fix in a weekend. What a "PRD-lead harsh mode" would look like and why I didn't ship it.</p>
+
+  <div class="meta">
+    Built by <strong>Ak</strong> · April 2026 · <a href="https://github.com/Akankshya-0309/prd-critic" style="color: var(--accent);">Source on GitHub</a>
+  </div>
+</div>
+</body>
+</html>
