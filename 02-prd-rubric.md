@@ -19,14 +19,16 @@ Is the problem stated in terms of a *user's* situation, not a solution or a feat
 - Does it name the user and the moment of pain?
 - Could a reader state the problem in one sentence after reading the section?
 - Does it avoid describing the feature as if it were the problem? (Red flag: "Users need a button to…")
+- The problem statement must be clear for what the PRD aims to achieve to solve rather than directly jump to solutioning 
 
 ## 2. Evidence & grounding (weight: high)
 
 Is there evidence this problem is real and worth solving?
 
 - Qualitative: quotes, research, usage observations.
-- Quantitative: funnel drop-offs, support ticket volume, segment sizes.
+- Quantitative: funnel drop-offs, support ticket volume, segment sizes, market research analysis from internal or external sources like customer questions, or industry analyst reports.
 - Does the PRD distinguish between "we assume" and "we've verified"?
+- Assumptions that are taken for the PRD must be clearly called out too in a separte section
 
 ## 3. Target user & segmentation (weight: medium)
 
@@ -34,15 +36,17 @@ Is the target user specific enough to make tradeoffs?
 
 - "Power users of our analytics dashboard who run >5 reports/week" beats "our users."
 - Does the PRD name who this is *not* for?
+- PRD also needs to define what is the expected outcome or benefit for the different category of users
 
 ## 4. Success metrics (weight: high)
 
 Are the metrics the PM proposes actually measuring the job getting done?
 
-- Is there a primary metric (one), not a grab-bag?
+- Is there a primary metric (one), not a grab-bag? 
 - Are there counter-metrics to catch harm? (e.g., "engagement up, but refund rate flat or down")
 - Does the PRD avoid pure vanity metrics (raw DAU, page views) unless tied to a business outcome?
 - Is there a target or threshold, or is it "move the needle"?
+- Metrics that we are measuring the PRD success against has to be clearly mentioned, it can be a base metric and other supporting primary and secondary metrics used for the evaluation of PRD success
 
 ## 5. Solution rationale & tradeoffs (weight: medium)
 
@@ -59,6 +63,7 @@ Is the scope tight enough to ship?
 - Is there an explicit list of non-goals?
 - Does the MVP feel genuinely minimal, or is it MVP-in-name?
 - Are dependencies on other teams called out?
+- Provide a detailed view of Functional requirements for the developers with objective, how to achieve, acceptance criteria, and other details mentioned to avoid any ambiguity in development. Example- Existing data movement jobs to be imported into the new product, *including the ones in deleted folder*- this is important to have such details for engineering else it gets missed out. 
 
 ## 7. Risks & unknowns (weight: medium)
 
@@ -76,6 +81,15 @@ How will the PM learn whether this worked?
 - Is there a staged rollout (internal → beta → GA)?
 - Are the learning milestones tied to specific metrics?
 - Is there a kill/iterate criterion? ("If metric X doesn't move by Y%, we'll…")
+- Contingency plan
+
+## 9. Conclusion/Summary/Action Items (weight: low–medium)
+
+Clear summary of the PRD, what it will achieve, and immediate vs long term action items for stakeholders in a summarized format 
+
+- With explanation of PRD details above, come to a braoder view here and summarize the benefits and key takeaway for each stakeholder
+- The action items and RACI (Responsible, Accountable, Consulted, Informed) matrix need to be defined for clear ownership 
+- Closing notes and PM view should be reflected as closing section 
 
 ---
 
