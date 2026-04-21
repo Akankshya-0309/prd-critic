@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PRD Critic — Prototype</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --ink: #1a1a1a;
+    --ink-dim: #555;
+    --accent: #c84b31;
+    --accent-soft: #fdeee8;
+    --line: #e4e0d8;
+    --card: #ffffff;
+    --good: #2f7a3f;
+    --warn: #b45309;
+    --bad: #b91c1c;
+    --code-bg: #f4f2ec;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 120px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  header .sub { color: var(--ink-dim); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+  .panel h2 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-dim); margin: 0 0 12px; }
+  textarea { width: 100%; min-height: 400px; padding: 14px; border-radius: 8px; border: 1px solid var(--line); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; resize: vertical; background: #fff; color: var(--ink); }
+  .controls { display: flex; gap: 12px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  button { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 600; cursor: pointer; font-size: 14px; }
+  button:hover { filter: brightness(0.95); }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  select { padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 13px; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .note { font-size: 12px; color: var(--ink-dim); margin-top: 10px; line-height: 1.5; }
+  .critique { font-size: 14px; line-height: 1.6; }
+  .critique h3 { font-size: 13px; text-transform: uppercase; color: var(--ink-dim); margin: 22px 0 10px; letter-spacing: 0.04em; }
+  .critique h3:first-child { margin-top: 4px; }
+  .scorerow { display: grid; grid-template-columns: 180px 80px 1fr; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); align-items: start; font-size: 13px; }
+  .scorerow:last-child { border-bottom: 0; }
+  .scorerow .c { font-weight: 600; }
+  .score-pill { display: inline-block; width: 28px; text-align: center; font-weight: 700; padding: 2px 0; border-radius: 6px; font-size: 12px; }
+  .score-1, .score-2 { background: #fde2e2; color: var(--bad); }
+  .score-3 { background: #fdf4dc; color: var(--warn); }
+  .score-4, .score-5 { background: #e1f2e6; color: var(--good); }
+  .fix { background: #fdeee8; border-left: 3px solid var(--accent); padding: 12px 14px; border-radius: 4px; margin: 10px 0 16px; }
+  .fix h4 { margin: 0 0 6px; font-size: 14px; }
+  .fix p { margin: 4px 0; font-size: 13px; }
+  .fix .label { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; color: var(--accent); }
+  .q { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #333; }
+  .empty { color: var(--ink-dim); font-style: italic; text-align: center; padding: 60px 20px; }
+  .footer-note { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--ink-dim); font-size: 12px; line-height: 1.6; }
+  .pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .ob { font-size: 13px; line-height: 1.6; }
+  .ob ol { padding-left: 22px; margin: 6px 0; }
+  .working { font-size: 14px; color: var(--ink-dim); font-style: italic; padding: 20px; text-align: center; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 0.2 } 50% { opacity: 1 } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>PRD Critic <span class="badge">Prototype</span></h1>
+      <div class="sub">Paste a PRD. Get a senior-PM-style critique against a rubric.</div>
+    </div>
+    <div class="sub">By: <strong>Ak</strong> · Portfolio demo</div>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Your PRD draft</h2>
+      <div class="pill-row">
+        <label for="sampleSel" class="note" style="margin-top:0">Load sample:</label>
+        <select id="sampleSel">
+          <option value="">— Choose —</option>
+          <option value="weak">Weak sample</option>
+          <option value="medium">Medium sample</option>
+          <option value="strong">Strong sample</option>
+        </select>
+      </div>
+      <textarea id="prdInput" placeholder="Paste your PRD here…"></textarea>
+      <div class="controls">
+        <button id="critiqueBtn">Critique this PRD</button>
+        <button id="clearBtn" class="secondary">Clear</button>
+      </div>
+      <p class="note">This prototype ships with three pre-built critiques wired to the three sample PRDs — so you can demo it without an API key. To run it on real PRDs, paste the system prompt from <span class="q">03-system-prompt.md</span> into a Claude Project and use that as the real back-end.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Critique</h2>
+      <div id="output">
+        <div class="empty">Paste a PRD or load a sample, then click <strong>Critique this PRD</strong>.</div>
+      </div>
+    </section>
+  </div>
+
+  <p class="footer-note">
+    Tip for interviews: open this page side-by-side with the rubric. Load the weak sample, run the critique, then load the strong sample and run it again. The point isn't that the tool works — it's that it <em>calibrates differently</em> between a weak and a strong draft. That's what you talk about.
+  </p>
+</div>
+
+<script>
+// =========================================================
+// Sample PRDs (kept short — real versions are in the md files)
+// =========================================================
+const SAMPLES = {
+  weak: `# PRD: Smart Reply in Inbox
+
+## Overview
+We want to add Smart Reply to help users respond to emails faster.
+
+## Problem
+Users are spending too much time replying to emails. Competitors like Google have Smart Reply and users love it. Also, our DAU has been flat and this could help move it.
+
+## Solution
+Below each email, show three suggested replies as buttons. The AI will generate them.
+
+## Success metrics
+- Increase DAU
+- Users send more emails
+- Positive user feedback
+
+## Risks
+- AI could suggest something weird
+- Users might not like it
+
+## Rollout
+We'll ship it to everyone in the next release.`,
+
+  medium: `# PRD: Saved Views for Project List
+
+## Problem
+Power users in our largest accounts (teams of 50+) have told us the default project list is hard to work with. 6 of 7 PMs we interviewed re-apply the same filters every morning. Data: top 10% of users apply filters on 82% of project-list visits.
+
+## Target user
+Mid-market and enterprise users managing 20+ active projects. Not for free-plan users.
+
+## Proposed solution
+Add "Saved Views": apply filters/sorts, save as a named view, pin up to 3, set a default.
+
+## Why this over alternatives
+- URL-based shareable filters: solves sharing, not daily friction. Rejected for v1.
+- Smart default: magical but opaque; users want control.
+- Do nothing / bookmarks: only 12% of power users bookmark filtered views.
+
+## Success metrics
+Primary: % of eligible power users with ≥1 saved view in 30 days. Target 40%.
+Secondary: time from app open to first project interaction, decrease 20%.
+Counter-metric: support tickets on project list must not increase.
+
+## Scope
+In: create, edit, pin, delete, personal views.
+Non-goals: sharing with teammates, admin templates, scheduled digests.
+
+## Risks
+- Discoverability — new concept. Mitigation: onboarding tooltip on 2+ filters.
+- Performance on complex filters at scale. Eng investigating.
+
+## Rollout
+10% → 50% → 100% over 3 weeks. Pause if counter-metric regresses.`,
+
+  strong: `# PRD: Trust-Signal Insert in Checkout
+
+## TL;DR
+~8% of new-account checkouts >$200 drop at Review & Pay. Evidence points to trust friction. Propose compact trust-signal module, new-to-merchant buyers only, ≥$200. Primary metric: new-to-merchant completion +2.5pp at 6 weeks.
+
+## Problem
+Knowns: completion 84.1% <$200 vs 76.3% ≥$200 for new-to-merchant; returning buyers spread <1pp.
+Session replays (n=42): land on Review, scroll, exit at 11s.
+Interviews (n=14): 9/14 cited "wasn't sure this was legit."
+Unknown: whether it's merchant brand or UI. Noted in Risks.
+
+## Who this is for
+Primary: first-time-at-merchant buyers, order ≥$200.
+Not for: returning buyers, small orders.
+
+## Proposed solution
+Above the pay button: buyer-protection guarantee, merchant signals (tenure, orders shipped, dispute rate), est. delivery. No new data, no new policy.
+
+## Why this, not alternatives
+Full merchant modal: adds a step. Bouncers don't click.
+Banner only: tested in Q1; +0.3pp, not significant.
+Price-surprise fix: separate H2 workstream.
+Wait for brand work: 9 months away.
+
+## Success metrics
+Primary: new-to-merchant Review→Complete rate ≥$200. Target +2.5pp (76.3→78.8) in 6wk.
+Secondary: GMV from cohort +1.5% MoM.
+Counter: dispute rate ≤+10% rel; checkout time ≤+1.5s p50; returning-buyer completion flat.
+Leading: dwell, scroll depth.
+
+## Scope
+In: module, eligibility, dynamic threshold, instrumentation.
+Non-goals: policy, Terms wording, returning-buyer UX, merchant-facing settings, localization.
+
+## Risks
+1. Attribution — mitigate with 50/50 holdout; don't GA without 95% sig.
+2. Crowding pay button below fold on small screens — sticky button; 375px review.
+3. Merchant-signal honesty — legal signed off; post-launch monitor.
+4. Real cause might be pricing — if metric doesn't move, next experiment is price surface.
+
+## Rollout
+Wk 0 internal · Wk 1–4 holdout · Wk 5 readout (kill if <+1pp p<0.05) · Wk 6–8 expand.`
+};
+
+// =========================================================
+// Pre-built critiques — what a well-tuned critic would return
+// =========================================================
+const CRITIQUES = {
+  weak: {
+    scores: [
+      ["Problem clarity", 1, "“Users are spending too much time replying to emails.” — asserted, not grounded."],
+      ["Evidence & grounding", 1, "No research, quotes, or data. “DAU has been flat” mentioned but not tied to the problem."],
+      ["Target user", 1, "No segment named. Implicitly “all inbox users.”"],
+      ["Success metrics", 1, "“Increase DAU” and “Positive user feedback” are vanity metrics. No target."],
+      ["Solution rationale", 2, "Cites a competitor as justification. No alternatives considered."],
+      ["Scope & non-goals", 1, "No non-goals. No MVP cut."],
+      ["Risks & unknowns", 2, "“AI could suggest something weird” — not prioritized or mitigated."],
+      ["Rollout & learning", 1, "“Ship to everyone.” No kill criterion."]
+    ],
+    priority: [
+      {
+        title: "No real problem statement",
+        issue: 'The PRD leads with a solution ("add Smart Reply") and treats speed-of-reply as a given. There is no quote, no data, and no observed moment of pain — only a competitor reference.',
+        why: "Without a problem rooted in user behavior, the team cannot tell whether Smart Reply is solving anything, and they will not know when to stop.",
+        fix: "Replace the Problem section with: Who is struggling? When? What does the data show about reply time, abandonment, or mobile vs. desktop? What have users said in their own words?"
+      },
+      {
+        title: "Metrics will not tell you if the feature worked",
+        issue: '"Increase DAU" and "users send more emails" are both gameable, and "positive user feedback" is not a metric at all.',
+        why: "If you ship and DAU rises 3%, you will not know whether Smart Reply caused it — or whether it caused more low-quality replies and social friction.",
+        fix: "Define a primary metric tied to the job-to-be-done (e.g., share of replies sent within 60 seconds of email open, on mobile). Add a counter-metric (reply length, retraction/edit rate) to catch harm."
+      },
+      {
+        title: "No scope discipline, no kill criterion",
+        issue: 'Scope is open-ended and the rollout is "ship to everyone." No non-goals, no staged rollout, no metric gates.',
+        why: "A generative AI feature shipped globally on day one with no holdout cannot be safely measured or retracted.",
+        fix: "Stage the rollout (internal → 10% → 100%). Pre-commit a kill criterion: if primary metric does not move by X at Y significance, revert. Name explicit non-goals (which languages, which platforms, which email types)."
+      }
+    ],
+    working: [
+      'Acknowledging a specific risk ("AI could suggest something weird") is a start, even though it needs mitigation.'
+    ],
+    questions: [
+      "What is the actual average time to reply today, and what would \"faster\" mean quantitatively?",
+      "Have you observed users struggling, or are you inferring this from a competitor?",
+      "What types of emails should never get Smart Reply (sensitive, threaded, work-vs-personal)?",
+      "How will you detect if Smart Reply causes people to send replies they regret?",
+      "What does success look like for the mobile-only cohort vs. desktop?"
+    ],
+    other: [
+      "Timeline is given but no dependency chain is shown.",
+      "Language expansion is named but not sized."
+    ]
+  },
+
+  medium: {
+    scores: [
+      ["Problem clarity", 4, '"re-apply the same filters every morning" — specific, user-anchored.'],
+      ["Evidence & grounding", 4, '"6 of 7 PMs," "top 10% apply filters on 82% of visits" — qual + quant.'],
+      ["Target user", 4, '"mid-market and enterprise … NOT for free-plan users" — specific, with exclusion.'],
+      ["Success metrics", 3, 'Primary + secondary + counter. Missing kill criterion.'],
+      ["Solution rationale", 4, 'Three alternatives weighed honestly, not just dismissed.'],
+      ["Scope & non-goals", 3, 'Non-goals named. Dependencies on other teams not mentioned.'],
+      ["Risks & unknowns", 3, 'Two risks with mitigations, but performance risk is vague ("Eng investigating").'],
+      ["Rollout & learning", 3, 'Staged rollout; "pause if counter-metric regresses" is not a kill criterion.']
+    ],
+    priority: [
+      {
+        title: "No kill or iterate criterion",
+        issue: '"Pause if counter-metric regresses" is the only stated gate. The primary metric target (40% adoption) has no threshold below which the feature gets pulled or rethought.',
+        why: "You will ship, adoption will come in at, say, 22%, and nobody will have pre-committed to what that means. The readout becomes a debate instead of a decision.",
+        fix: 'Add: "If <25% adoption at day 30, we treat it as a discoverability failure and ship onboarding v2 before expanding. If <10%, we pull the feature and re-interview."'
+      },
+      {
+        title: "Performance risk is a hand-wave",
+        issue: '"Performance — views with complex filter combinations on large accounts could be slow. Eng team is investigating."',
+        why: "This risk is most likely to block launch, yet it is the least specified. If it comes back red in week 3, the ship date slips and there is no contingency plan.",
+        fix: "Name the accounts that will be tested, the latency budget (e.g., p95 < 800ms), the fallback (cap filter complexity? warn the user?), and the decision owner."
+      },
+      {
+        title: "Cross-team dependencies are invisible",
+        issue: "The PRD does not name dependencies. Saved Views likely touches search/indexing, onboarding tooltips, mobile rendering.",
+        why: "Unnamed dependencies surprise you in week 2 and cost you a week.",
+        fix: "Add a short dependencies section: which teams' surfaces you touch, who has signed off, what is in flight."
+      }
+    ],
+    working: [
+      'Explicit non-goals — sharing, admin templates, digests — will save you from scope creep.',
+      'The "do nothing / bookmarks" alternative with its 12% number is exactly the kind of honest benchmark senior reviewers look for.'
+    ],
+    questions: [
+      "What is the ship date, and what is the minimum viable view count per user (5? 20? 100?)?",
+      "How do you handle views that reference filters the user no longer has permission for?",
+      "Is the 40% adoption target validated against similar features in your product?",
+      "What mobile constraints are you accepting in v1?"
+    ],
+    other: [
+      "The one open question at the end (mobile vs desktop editing) is the easiest to resolve and should be settled before the review meeting.",
+      "Consider calling out what telemetry needs to exist before launch to measure the secondary metric."
+    ]
+  },
+
+  strong: {
+    scores: [
+      ["Problem clarity", 5, '"completion 84.1% <$200, 76.3% ≥$200; returning buyers spread <1pp" — problem shape is crisp.'],
+      ["Evidence & grounding", 5, 'Quant + 42 replays + 14 interviews, and known/unknown split is explicit.'],
+      ["Target user", 5, '"first-time-at-merchant … NOT for returning or small orders."'],
+      ["Success metrics", 5, 'Primary + secondary + 3 counter-metrics + leading indicators. Kill criterion in Rollout.'],
+      ["Solution rationale", 5, 'Four alternatives evaluated, each with why-rejected, including "wait for brand work."'],
+      ["Scope & non-goals", 4, 'Clear non-goals. Dependencies named. Localization explicitly deferred.'],
+      ["Risks & unknowns", 4, 'Four risks, each with a mitigation. Attribution risk is especially well-handled.'],
+      ["Rollout & learning", 5, '"kill if <+1pp at p<0.05" — pre-committed decision rule.']
+    ],
+    priority: [
+      {
+        title: "Risk #4 (\"real cause might be pricing\") needs a concrete fork",
+        issue: 'The PRD admits the observed friction might be price-surprise rather than trust, but the only response is "if primary metric fails, the next experiment is price."',
+        why: "This is a real hypothesis-competition. If pricing is the cause, the trust module will look like it worked in some verticals and not others — and you will mis-read the data.",
+        fix: "Add a pre-registered analysis: at readout, segment the holdout by observed shipping-price surprise and report the interaction. If the interaction is strong, you downgrade your belief in the trust mechanism even if the primary metric moves."
+      },
+      {
+        title: "\"98.2% positive\"-style signals need a published floor",
+        issue: 'Risk #3 notes that merchant signals might feel marketing-y and legal has signed off, but does not define a minimum threshold for when to hide a signal.',
+        why: 'If a merchant has 58% positive or 1 order shipped, surfacing the number hurts trust rather than helping it. The system needs a principled floor.',
+        fix: "Define a rule: signal only shown when (a) the merchant exceeds X orders and (b) the number crosses a floor that the Risk team agrees looks net-positive. Deferring this to launch means ugly surprises in week 2."
+      }
+    ],
+    working: [
+      'Explicit known/unknown split under Problem — unusually rigorous.',
+      'Attribution mitigation (50/50 holdout, 95% sig gate before GA) is the kind of self-discipline most PRDs skip.',
+      'Rollout has a written kill criterion; this is what separates a sharp PRD from a credible-sounding one.'
+    ],
+    questions: [
+      "How do you detect and handle the case where the trust module itself becomes a negative signal by its absence (e.g., a returning buyer sees it once, then doesn't, and wonders why)?",
+      "Is the dynamic threshold adjusted during the experiment, or locked? Adjusting it mid-run confounds attribution.",
+      "What does 'not significant' specifically mean in your experimentation platform, and is 4 weeks enough power for +2.5pp at your volume?"
+    ],
+    other: [
+      "The non-goals list is strong but consider adding 'no change to merchant-side UI' explicitly.",
+      "Consider naming the Risk team reviewer by role."
+    ]
+  }
+};
+
+// =========================================================
+// Render
+// =========================================================
+const out = document.getElementById("output");
+const input = document.getElementById("prdInput");
+
+document.getElementById("sampleSel").addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (!v) return;
+  input.value = SAMPLES[v];
+  input.dataset.sample = v;
+  out.innerHTML = '<div class="empty">Click <strong>Critique this PRD</strong> to see the critique.</div>';
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  input.value = "";
+  input.dataset.sample = "";
+  out.innerHTML = '<div class="empty">Paste a PRD or load a sample, then click <strong>Critique this PRD</strong>.</div>';
+});
+
+document.getElementById("critiqueBtn").addEventListener("click", () => {
+  const text = input.value.trim();
+  if (!text) {
+    out.innerHTML = '<div class="empty">Paste a PRD first.</div>';
+    return;
+  }
+  out.innerHTML = '<div class="working"><span class="dot"></span>Critiquing against rubric…</div>';
+
+  const which = input.dataset.sample;
+  setTimeout(() => {
+    if (which && CRITIQUES[which]) {
+      renderCritique(CRITIQUES[which]);
+    } else {
+      // Custom input: give a fallback response explaining how to use the real one.
+      renderFallback();
+    }
+  }, 700);
+});
+
+function renderCritique(c) {
+  let html = "";
+  html += '<div class="critique">';
+
+  html += '<h3>Rubric scores</h3>';
+  for (const [crit, score, ev] of c.scores) {
+    html += `<div class="scorerow">
+      <div class="c">${crit}</div>
+      <div><span class="score-pill score-${score}">${score}</span></div>
+      <div>${ev}</div>
+    </div>`;
+  }
+
+  html += '<h3>Priority fixes</h3>';
+  c.priority.forEach((p, i) => {
+    html += `<div class="fix">
+      <h4>${i+1}. ${p.title}</h4>
+      <p><span class="label">Issue</span> ${p.issue}</p>
+      <p><span class="label">Why it matters</span> ${p.why}</p>
+      <p><span class="label">Fix</span> ${p.fix}</p>
+    </div>`;
+  });
+
+  html += '<h3>What\'s working</h3><ul>';
+  for (const w of c.working) html += `<li>${w}</li>`;
+  html += '</ul>';
+
+  if (c.other && c.other.length) {
+    html += '<h3>Other notes</h3><ul>';
+    for (const o of c.other) html += `<li>${o}</li>`;
+    html += '</ul>';
+  }
+
+  html += '<h3>Open questions for the author</h3><div class="ob"><ol>';
+  for (const q of c.questions) html += `<li>${q}</li>`;
+  html += '</ol></div>';
+
+  html += '</div>';
+  out.innerHTML = html;
+}
+
+function renderFallback() {
+  out.innerHTML = `
+    <div class="critique">
+      <h3>This prototype demos pre-built critiques</h3>
+      <p>To see the critic in action, load one of the sample PRDs from the dropdown (<strong>Weak</strong>, <strong>Medium</strong>, or <strong>Strong</strong>) and click Critique again.</p>
+      <p>To run the critic on <em>your own</em> PRDs with real LLM output:</p>
+      <ol>
+        <li>Open <span class="q">10-setup-guide.md</span> — 15-min setup in a Claude Project.</li>
+        <li>Paste <span class="q">03-system-prompt.md</span> as the project's custom instructions.</li>
+        <li>Attach <span class="q">02-prd-rubric.md</span> as project knowledge.</li>
+        <li>Paste any PRD into a new chat. The output will follow the same structure you see in the sample critiques here.</li>
+      </ol>
+      <p class="note" style="margin-top: 20px;">(Why pre-built? This HTML demo runs entirely in the browser so it's easy to show in an interview. The real intelligence lives in the system prompt + Claude, not this page.)</p>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
